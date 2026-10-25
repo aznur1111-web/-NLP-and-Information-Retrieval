@@ -1,112 +1,426 @@
-<!doctype html><html lang="en" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark light"><meta name="description" content="Az NLP &amp; Information Retrieval Lab"><title>Az NLP &amp; Information Retrieval Lab</title>
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <meta name="description" content="A beginner-friendly NLP and Information Retrieval learning lab covering text preparation, tokenization, language models, ranking, semantic search and RAG.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-a8EeU3muP3/CbkxllBt06oSXAQ5ifpyxl2J+6a0BORk='; style-src 'sha256-9Go8puBg5AUFPFFbPxTANdH8P2ju5YbSGi+QUPAXeM8='; style-src-attr 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'; object-src 'none'">
+  <title>aznur / NLP &amp; IR Lab</title>
 <style>
-:root{color-scheme:dark;--bg:#111722;--panel:#192230;--panel2:#202b3a;--panel3:#141c27;--line:#2c394b;--line2:#3b4b61;--text:#e8eef7;--muted:#a7b4c7;--subtle:#8190a5;--accent:#8ab4f8;--strong:#c9ddff;--good:#9ed7bd;--warn:#edc477;--bad:#ff929e;--shadow:none;--radius:13px}
-:root[data-theme=light]{color-scheme:light;--bg:#f4f6f8;--panel:#fff;--panel2:#f7f9fb;--panel3:#f0f4f8;--line:#dce2e9;--line2:#cbd4df;--text:#17212d;--muted:#596a7e;--subtle:#718197;--accent:#315fa2;--strong:#244a82;--good:#176b4c;--warn:#8c5c04;--bad:#b33143;--shadow:0 8px 24px rgba(20,35,50,.05)}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 Inter,system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select,textarea{font:inherit}button,a,select{touch-action:manipulation}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}a{color:var(--accent);text-decoration:none}.muted{color:var(--muted)}.mono,code,pre,textarea{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
-.topbar{height:64px;position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:18px;padding:0 22px;background:var(--bg);border-bottom:1px solid var(--line)}
-.brand{display:flex;align-items:center;gap:10px;color:var(--text)}.brand-mark{width:34px;height:34px;border:1px solid var(--line2);border-radius:10px;background:var(--panel2);display:grid;place-items:center;color:var(--strong);font-weight:850;font-size:15px}.brand strong{display:block;font-size:14px;line-height:1.2}.brand small{display:block;font-size:10px;letter-spacing:.14em;color:var(--muted);margin-top:2px}
-.top-meta{flex:1;color:var(--subtle);font-size:12px;letter-spacing:.02em}
-.top-actions{display:flex;align-items:center;gap:7px}.top-actions label{font-size:11px;color:var(--muted)}
-select,.btn{border:1px solid var(--line2);background:var(--panel3);color:var(--text);border-radius:8px;padding:8px 11px;font-size:12px}.btn{font-weight:600;white-space:nowrap}.btn:hover{border-color:var(--accent);color:var(--strong)}.btn.primary{background:var(--accent);color:#10203a;border-color:var(--accent)}:root[data-theme=light] .btn.primary{color:white}
-.layout{display:grid;grid-template-columns:264px minmax(420px,1fr);max-width:1500px;margin:auto;min-height:calc(100vh - 64px)}
-.sidebar{position:sticky;top:64px;height:calc(100vh - 64px);overflow:auto;border-right:1px solid var(--line);padding:20px 14px;display:flex;flex-direction:column}
-.side-title{display:flex;justify-content:space-between;color:var(--subtle);font-size:10px;letter-spacing:.14em;font-weight:800;padding:0 4px 12px}
-.pill,.tag{border:1px solid var(--line2);border-radius:6px;padding:3px 7px;font-size:10px;color:var(--muted);white-space:nowrap}
-.search{display:flex;gap:7px;align-items:center;border:1px solid var(--line);border-radius:9px;background:var(--panel3);height:39px;padding:0 10px;margin-bottom:10px}
-.search input{min-width:0;width:100%;background:transparent;border:0;outline:0;color:var(--text);font-size:12px}
-.search kbd{border:1px solid var(--line);border-radius:4px;padding:1px 5px;color:var(--subtle);font-size:10px}
-.filter{display:block;color:var(--subtle);font-size:11px;margin-bottom:12px}.filter select{display:block;width:100%;max-width:none;margin-top:5px;padding:7px}
-.tree{display:flex;flex-direction:column;gap:12px}
-.group-label{display:flex;justify-content:space-between;color:var(--subtle);font-size:10px;font-weight:800;letter-spacing:.08em;padding:4px 5px}
-.link{width:100%;text-align:left;display:flex;gap:8px;align-items:center;background:transparent;border:1px solid transparent;color:var(--muted);padding:7px 8px;border-radius:8px;min-height:34px}
-.link .num{font:10px ui-monospace,monospace;color:var(--subtle);width:19px;flex:none}
-.link .name{font-size:12px;flex:1}.link .done{color:var(--good)}
-.link:hover{background:var(--panel2);color:var(--text)}
-.link.active{background:var(--panel2);border-color:var(--line2);color:var(--strong)}
-.side-foot{margin-top:auto;border-top:1px solid var(--line);padding-top:14px}
-.progress-row{display:flex;justify-content:space-between;color:var(--subtle);font-size:11px;margin-bottom:7px}
-.progress{height:5px;background:var(--panel2);border-radius:9px;overflow:hidden}.progress>div{height:100%;width:0;background:var(--accent);transition:width .25s}
-.side-actions{display:flex;gap:6px;margin-top:12px}.side-actions .btn{flex:1;padding:7px;font-size:11px}
-main{max-width:920px;width:100%;min-width:0;margin:auto;padding:28px 30px 40px}
-.breadcrumb{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--subtle);margin-bottom:16px}
-.header{padding:2px 2px 22px;border-bottom:1px solid var(--line);margin-bottom:20px}
-.eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:.13em;font-weight:800;color:var(--accent);margin-bottom:9px}
-.header h1{font-size:clamp(27px,3vw,36px);line-height:1.12;letter-spacing:-.035em;margin:0 0 10px;font-weight:700}
-.header p{font-size:14.5px;color:var(--muted);margin:0 0 14px;max-width:740px}
-.tags{display:flex;flex-wrap:wrap;gap:6px}
-.tag.good{color:var(--good)}.tag.warn{color:var(--warn)}
-.header-actions{display:flex;gap:7px;margin-top:16px;flex-wrap:wrap}
-.panel{border:1px solid var(--line);background:var(--panel);border-radius:var(--radius);overflow:hidden;margin-bottom:16px;box-shadow:var(--shadow)}
-.panel-head{padding:18px 20px 0}.panel-head h2{font-size:15px;margin:0 0 4px;letter-spacing:-.01em;font-weight:650}.panel-head p{font-size:12.5px;color:var(--muted);margin:0}
-.body{padding:16px 20px 20px}
-.idea{display:grid;grid-template-columns:minmax(0,1fr) 210px;gap:20px}
-.idea p{font-size:13.5px;color:var(--muted);margin:0 0 13px}
-.mental{background:var(--panel3);border:1px solid var(--line);border-radius:10px;padding:13px}
-.mental small{color:var(--subtle);font-size:10px;letter-spacing:.11em;text-transform:uppercase}
-.mental strong{display:block;margin:6px 0;font-size:13px;color:var(--strong)}
-.mental p{font-size:12px;color:var(--muted);margin:0}
-.takeaway{padding:11px 13px;border:1px solid var(--line2);background:var(--panel3);border-radius:8px;color:var(--strong);font-size:12.5px;line-height:1.6}
-.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.mini{background:var(--panel3);border:1px solid var(--line);border-radius:10px;padding:13px}
-.mini h3{font-size:12px;margin:0 0 7px;font-weight:650}
-.mini p{font-size:12.5px;color:var(--muted);margin:0;line-height:1.6}
-.steps{counter-reset:s;list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:9px}
-.steps li{counter-increment:s;display:flex;gap:10px;color:var(--muted);font-size:12.5px;line-height:1.55}
-.steps li:before{content:counter(s);width:23px;height:23px;flex:none;display:grid;place-items:center;border:1px solid var(--line2);background:var(--panel3);border-radius:6px;color:var(--accent);font:11px ui-monospace,monospace}
-.pseudo{white-space:pre-wrap;overflow:auto;background:var(--panel3);border:1px solid var(--line);border-radius:10px;padding:14px;font:12px/1.75 ui-monospace,monospace;color:var(--strong);margin:0}
-.table-wrap{overflow:auto}
-table{border-collapse:collapse;width:100%;font-size:12.5px}
-th,td{border-bottom:1px solid var(--line);text-align:left;padding:9px 10px;vertical-align:top}
-th{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--subtle);font-weight:700}
-td{color:var(--muted)}
-.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.tile{padding:12px;background:var(--panel3);border:1px solid var(--line);border-radius:9px}
-.tile span{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--subtle)}
-.tile strong{display:block;color:var(--strong);font:700 14px ui-monospace,monospace;margin-top:6px}
-.tile small{font-size:10.5px;color:var(--muted);display:block;margin-top:2px}
-.notice{padding:12px 13px;background:var(--panel3);border:1px solid color-mix(in srgb,var(--warn) 35%,var(--line));border-radius:9px;font-size:12.5px;color:var(--muted);line-height:1.65}
-.notice strong{color:var(--warn)}
-.notice.info{border-color:var(--line2)}.notice.info strong{color:var(--accent)}
-.lab-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.lab-top label{font-size:11.5px;color:var(--muted)}
-.lab-input{width:100%;min-height:80px;resize:vertical;background:var(--panel3);border:1px solid var(--line2);border-radius:9px;padding:11px;color:var(--text);font:12px/1.65 ui-monospace,monospace;margin:11px 0}
-.lab-output{padding:13px;background:var(--panel3);border:1px solid var(--line);border-radius:9px;min-height:70px;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--strong);font:12px/1.75 ui-monospace,monospace;overflow-x:auto}
-.lab-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
-.label{font-size:10px;color:var(--subtle);font-weight:800;letter-spacing:.1em;text-transform:uppercase;margin-bottom:7px}
-.code-head{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:11px 13px;background:var(--panel3);border-bottom:1px solid var(--line)}
-.code-editor{display:block;width:100%;min-height:220px;resize:vertical;border:0;border-radius:0;background:var(--panel3);color:var(--text);padding:15px;font:12px/1.7 ui-monospace,monospace;outline:0}
-.code-foot{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:9px 13px;color:var(--subtle);font-size:10px;border-top:1px solid var(--line)}
-.practice{border:1px solid var(--line);background:var(--panel3);border-radius:9px;padding:13px}
-.practice summary{cursor:pointer;font-size:12.5px;font-weight:600}
-.practice p{font-size:12.5px;color:var(--muted);margin:10px 0 0;line-height:1.65}
-.references{display:flex;flex-direction:column;gap:8px}
-.references a{font-size:12.5px;overflow-wrap:anywhere}
-.home-hero{padding:30px;background:linear-gradient(150deg,var(--panel),var(--panel3));border:1px solid var(--line);border-radius:14px;margin-bottom:16px}
-.home-hero h1{font-size:clamp(30px,3.6vw,42px);line-height:1.1;letter-spacing:-.04em;margin:8px 0 14px;font-weight:700}
-.home-hero p{color:var(--muted);font-size:14px;max-width:720px;margin:0 0 18px;line-height:1.65}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
-.stat{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}
-.stat strong{display:block;font:700 22px ui-monospace,monospace;color:var(--strong)}
-.stat span{display:block;font-size:10.5px;color:var(--muted);margin-top:3px}
-.chapter-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.chapter-card{padding:14px;text-align:left;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--text)}
-.chapter-card:hover{border-color:var(--accent)}
-.chapter-card .num{font-size:10px;color:var(--accent);letter-spacing:.09em;font-weight:800}
-.chapter-card strong{display:block;font-size:13px;margin:5px 0;font-weight:650}
-.chapter-card p{font-size:11.5px;color:var(--muted);margin:0;line-height:1.55}
-.toast{position:fixed;z-index:99;bottom:20px;left:50%;transform:translate(-50%,10px);opacity:0;pointer-events:none;background:var(--panel);border:1px solid var(--line2);border-radius:9px;padding:11px 15px;box-shadow:var(--shadow);font-size:12px;transition:opacity .14s,transform .14s}
-.toast.show{opacity:1;transform:translate(-50%,0)}
-.footer{font-size:10.5px;color:var(--subtle);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:6px 2px 14px;align-items:center}
-.plot{width:100%;height:auto;display:block;background:var(--bg);border:1px solid var(--line);border-radius:8px;margin:6px 0}
-@media(max-width:1080px){.layout{grid-template-columns:240px minmax(360px,1fr)}main{padding:24px 22px 36px}}
-@media(max-width:840px){.topbar{height:auto;min-height:60px;flex-wrap:wrap;gap:10px;padding:10px 14px}.top-meta{display:none}.top-actions{margin-left:auto}.top-actions label{display:none}.layout{display:block}.sidebar{position:static;height:auto;max-height:none;border:0;border-bottom:1px solid var(--line);padding:14px}.tree{max-height:260px;overflow:auto}.side-foot{display:none}main{padding:20px 15px 32px}.idea{grid-template-columns:1fr}.mental{order:-1}.stats{grid-template-columns:1fr 1fr}.chapter-cards,.two,.lab-cols{grid-template-columns:1fr}}
-@media(max-width:520px){.brand small{display:none}.brand-mark{width:30px;height:30px}.brand strong{font-size:12px}.top-actions select{max-width:92px;padding:6px;font-size:10px}.top-actions .btn{padding:6px 8px;font-size:10px}.chapter-cards{grid-template-columns:1fr}.tiles{grid-template-columns:1fr}.home-hero{padding:20px}.home-hero h1{font-size:30px}.header h1{font-size:27px}.body,.panel-head{padding-left:15px;padding-right:15px}.footer{display:block}.footer span{display:block;margin-bottom:6px}}
-@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important}}
-@media print{.topbar,.sidebar,.header-actions,.lab-top,.btn,.toast{display:none!important}.layout{display:block}main{padding:0;max-width:none}.panel,.home-hero{break-inside:avoid;box-shadow:none}body{background:#fff;color:#111}}
-</style></head><body>
 
+:root {
+  color-scheme: light;
+  --bg: #fdfcfc;
+  --text: #201d1d;
+  --muted: #646262;
+  --subtle: #9a9898;
+  --line: #dcd9d9;
+  --line2: #c8c4c4;
+  --accent: #b45309;
+  --accent-hover: #92400e;
+  --strong: #201d1d;
+  --good: #10b981;
+  --warn: #b45309;
+  --bad: #b91c1c;
+  --panel: #faf8f7;
+  --panel2: #f4f0ef;
+  --panel3: #faf8f7;
+  --active: #f4f0ef;
+  --shadow: 0 8px 24px rgba(32, 29, 29, .05);
+  --radius: 4px;
+  --radius-lg: 6px;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #161313;
+  --text: #f1eeee;
+  --muted: #9a9898;
+  --subtle: #646262;
+  --line: #302c2c;
+  --line2: #484141;
+  --accent: #f59e0b;
+  --accent-hover: #d97706;
+  --strong: #f1eeee;
+  --good: #10b981;
+  --warn: #f59e0b;
+  --bad: #f87171;
+  --panel: #1c1818;
+  --panel2: #211d1d;
+  --panel3: #1c1818;
+  --active: #211d1d;
+  --shadow: 0 8px 24px rgba(0, 0, 0, .18);
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  min-width: 320px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+button, input, select, textarea { font: inherit; }
+button, a, select { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+button { cursor: pointer; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { color: var(--accent-hover); text-decoration: underline; }
+button:focus-visible, input:focus-visible, select:focus-visible,
+textarea:focus-visible, a:focus-visible, summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+[hidden] { display: none !important; }
+.muted { color: var(--muted); }
+.mono, code, pre, textarea { font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+
+/* Header and brand */
+.topbar {
+  min-height: 60px;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 0 20px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+}
+.brand {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 7px;
+  min-width: max-content;
+  color: var(--text);
+  font-size: 12px;
+  letter-spacing: -.02em;
+}
+.brand:hover { text-decoration: none; }
+.brand-word { color: var(--text); font-weight: 750; }
+.brand-divider { color: var(--accent); font-weight: 650; }
+.brand-name { color: var(--muted); font-weight: 500; }
+.top-meta { flex: 1; min-width: 0; color: var(--subtle); font-size: 10px; }
+.top-actions { display: flex; align-items: center; gap: 7px; }
+.top-actions label { color: var(--muted); font-size: 10px; }
+select, .btn {
+  min-height: 30px;
+  border: 1px solid var(--line2);
+  border-radius: var(--radius);
+  background: var(--panel3);
+  color: var(--text);
+  padding: 6px 9px;
+  font-size: 10.5px;
+}
+.btn { font-weight: 600; white-space: nowrap; }
+.btn:hover { border-color: var(--accent); color: var(--accent-hover); }
+:root[data-theme="dark"] .btn:hover { color: var(--accent); }
+.btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+:root[data-theme="dark"] .btn.primary { color: #201d1d; }
+.btn.primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); color: #fff; }
+:root[data-theme="dark"] .btn.primary:hover { color: #201d1d; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+
+/* Course layout and navigation */
+.layout {
+  display: grid;
+  grid-template-columns: 238px minmax(0, 1fr);
+  max-width: 1740px;
+  margin: 0 auto;
+  min-height: calc(100vh - 60px);
+}
+.sidebar {
+  position: sticky;
+  top: 60px;
+  height: calc(100vh - 60px);
+  overflow: auto;
+  border-right: 1px solid var(--line);
+  padding: 18px 12px;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.side-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  color: var(--subtle);
+  font-size: 9px;
+  letter-spacing: .11em;
+  font-weight: 700;
+  padding: 0 4px 12px;
+}
+.pill, .tag {
+  border: 1px solid var(--line2);
+  border-radius: var(--radius);
+  padding: 2px 6px;
+  font-size: 9px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.search {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel3);
+  min-height: 34px;
+  padding: 0 8px;
+  margin-bottom: 10px;
+  color: var(--muted);
+}
+.search input {
+  min-width: 0;
+  width: 100%;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  color: var(--text);
+  font-size: 10.5px;
+}
+.search kbd, kbd {
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 1px 4px;
+  color: var(--subtle);
+  font-size: 9px;
+}
+.filter { display: block; color: var(--muted); font-size: 10px; margin-bottom: 12px; }
+.filter select { display: block; width: 100%; margin-top: 5px; padding: 6px; }
+.tree { display: flex; flex-direction: column; gap: 11px; }
+.group-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  color: var(--subtle);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  padding: 4px 5px;
+}
+.link {
+  width: 100%;
+  text-align: left;
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  color: var(--muted);
+  padding: 6px 7px;
+  min-height: 31px;
+}
+.link .num { font: 9px ui-monospace, monospace; color: var(--subtle); width: 19px; flex: none; }
+.link .name { font-size: 10.5px; flex: 1; }
+.link .done { color: var(--good); font-size: 10px; }
+.link:hover { background: var(--panel2); color: var(--text); }
+.link.active { background: var(--active); border-color: var(--accent); color: var(--strong); border-left: 2px solid var(--accent); }
+.side-foot { margin-top: auto; border-top: 1px solid var(--line); padding-top: 12px; }
+.progress-row { display: flex; justify-content: space-between; gap: 6px; color: var(--subtle); font-size: 9px; margin-bottom: 7px; }
+.progress { height: 4px; background: var(--panel2); overflow: hidden; }
+.progress > div { height: 100%; width: 0; background: var(--accent); }
+.side-actions { display: flex; gap: 6px; margin-top: 10px; }
+.side-actions .btn { flex: 1; padding: 6px; font-size: 9.5px; }
+
+/* Page header and lesson cards */
+main { max-width: 1220px; width: 100%; min-width: 0; margin: 0 auto; padding: 22px; }
+.breadcrumb { font-size: 9px; text-transform: uppercase; letter-spacing: .08em; color: var(--subtle); margin-bottom: 12px; }
+.header { padding: 2px 2px 18px; border-bottom: 1px solid var(--line); margin-bottom: 16px; }
+.eyebrow { font-size: 9px; text-transform: uppercase; letter-spacing: .1em; font-weight: 700; color: var(--accent); margin-bottom: 7px; }
+.header h1 { font-size: 22px; line-height: 1.15; letter-spacing: -.02em; margin: 0 0 8px; font-weight: 650; }
+.header p { font-size: 12px; color: var(--muted); margin: 0 0 11px; max-width: 850px; }
+.tags { display: flex; flex-wrap: wrap; gap: 5px; }
+.tag.good { color: var(--good); }
+.tag.warn { color: var(--warn); }
+.header-actions { display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap; }
+.panel {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: 12px;
+  box-shadow: none;
+  min-width: 0;
+}
+.panel-head { padding: 14px 15px 0; }
+.panel-head h2 { font-size: 12.5px; margin: 0 0 3px; letter-spacing: 0; font-weight: 650; }
+.panel-head p { font-size: 10.5px; color: var(--muted); margin: 0; }
+.body { padding: 12px 15px 15px; }
+.idea { display: grid; grid-template-columns: minmax(0, 1fr) 200px; gap: 14px; }
+.idea p { font-size: 11.5px; color: var(--muted); margin: 0 0 10px; }
+.idea p strong { color: var(--text); }
+.mental { background: var(--panel3); border: 1px solid var(--line); border-radius: var(--radius); padding: 11px; }
+.mental small { color: var(--subtle); font-size: 9px; letter-spacing: .08em; text-transform: uppercase; }
+.mental strong { display: block; margin: 5px 0; font-size: 11px; color: var(--strong); }
+.mental p { font-size: 10.5px; color: var(--muted); margin: 0; }
+.takeaway {
+  padding: 9px 11px;
+  border: 1px solid var(--line2);
+  border-left: 2px solid var(--accent);
+  background: var(--panel3);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  color: var(--strong);
+  font-size: 10.5px;
+  line-height: 1.65;
+}
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.mini { background: var(--panel3); border: 1px solid var(--line); border-radius: var(--radius); padding: 11px; min-width: 0; }
+.mini h3 { font-size: 10.5px; margin: 0 0 6px; font-weight: 650; }
+.mini p { font-size: 10.5px; color: var(--muted); margin: 0; line-height: 1.65; }
+.steps { counter-reset: s; list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 7px; }
+.steps li { counter-increment: s; display: flex; gap: 8px; color: var(--muted); font-size: 10.5px; line-height: 1.6; }
+.steps li:before {
+  content: counter(s);
+  width: 20px;
+  height: 20px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line2);
+  background: var(--panel3);
+  border-radius: 3px;
+  color: var(--accent);
+  font: 9px ui-monospace, monospace;
+}
+.pseudo {
+  white-space: pre-wrap;
+  overflow: auto;
+  background: var(--panel3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 11px;
+  font: 10.5px/1.65 ui-monospace, monospace;
+  color: var(--strong);
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.table-wrap { overflow: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 10.5px; }
+th, td { border-bottom: 1px solid var(--line); text-align: left; padding: 7px 8px; vertical-align: top; }
+th { font-size: 9px; text-transform: uppercase; letter-spacing: .06em; color: var(--subtle); font-weight: 700; }
+td { color: var(--muted); }
+.tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.tile { padding: 10px; background: var(--panel3); border: 1px solid var(--line); border-radius: var(--radius); min-width: 0; }
+.tile span { display: block; font-size: 9px; text-transform: uppercase; letter-spacing: .06em; color: var(--subtle); }
+.tile strong { display: block; color: var(--strong); font: 650 12px ui-monospace, monospace; margin-top: 5px; }
+.tile small { font-size: 9px; color: var(--muted); display: block; margin-top: 3px; }
+.notice {
+  padding: 10px 11px;
+  background: var(--panel3);
+  border: 1px solid var(--line);
+  border-left: 2px solid var(--accent);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  font-size: 10.5px;
+  color: var(--muted);
+  line-height: 1.65;
+}
+.notice strong { color: var(--accent); }
+.notice.info { border-color: var(--line); border-left-color: var(--accent); }
+.lab-top { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+.lab-top label { font-size: 10.5px; color: var(--muted); }
+.lab-input {
+  width: 100%; min-height: 80px; resize: vertical;
+  background: var(--panel3); border: 1px solid var(--line2);
+  border-radius: var(--radius); padding: 10px; color: var(--text);
+  font: 10.5px/1.65 ui-monospace, monospace; margin: 10px 0;
+}
+.lab-output {
+  padding: 11px; background: var(--panel3); border: 1px solid var(--line);
+  border-radius: var(--radius); min-height: 70px; white-space: pre-wrap;
+  overflow-wrap: anywhere; color: var(--strong); font: 10.5px/1.65 ui-monospace, monospace; overflow-x: auto;
+}
+.lab-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+.label { font-size: 9px; color: var(--subtle); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 6px; }
+.code-head { display: flex; gap: 7px; align-items: center; justify-content: space-between; flex-wrap: wrap; padding: 9px 11px; background: var(--panel3); border-bottom: 1px solid var(--line); }
+.code-editor { display: block; width: 100%; min-height: 220px; resize: vertical; border: 0; border-radius: 0; background: #11100f; color: #f1eeee; padding: 12px; font: 10.5px/1.65 ui-monospace, monospace; outline: 0; tab-size: 2; }
+:root[data-theme="light"] .code-editor { background: #211d1d; color: #f1eeee; }
+.code-editor:focus { box-shadow: inset 0 0 0 1px var(--accent); }
+.code-foot { display: flex; justify-content: space-between; gap: 8px; align-items: center; padding: 8px 11px; color: var(--subtle); font-size: 9px; border-top: 1px solid var(--line); flex-wrap: wrap; }
+.practice { border: 1px solid var(--line); background: var(--panel3); border-radius: var(--radius); padding: 11px; }
+.practice summary { cursor: pointer; font-size: 10.5px; font-weight: 600; color: var(--text); }
+.practice p { font-size: 10.5px; color: var(--muted); margin: 9px 0 0; line-height: 1.65; }
+.references { display: flex; flex-direction: column; gap: 7px; }
+.references a { font-size: 10.5px; overflow-wrap: anywhere; }
+.references a::after { content: " ↗"; font-size: 9px; }
+.references small { display: block; color: var(--subtle); font-size: 9px; margin-top: 2px; }
+
+/* Home, course map and progress */
+.home-hero { padding: 22px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius-lg); margin-bottom: 12px; }
+.home-hero h1 { font-size: 22px; line-height: 1.2; letter-spacing: -.02em; margin: 7px 0 10px; font-weight: 650; }
+.home-hero p { color: var(--muted); font-size: 11.5px; max-width: 800px; margin: 0 0 14px; line-height: 1.7; }
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-bottom: 12px; }
+.stat { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 11px; min-width: 0; }
+.stat strong { display: block; font: 650 18px ui-monospace, monospace; color: var(--strong); }
+.stat span { display: block; font-size: 9px; color: var(--muted); margin-top: 3px; }
+.chapter-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.chapter-card { padding: 11px; text-align: left; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); color: var(--text); }
+.chapter-card:hover { border-color: var(--accent); background: var(--active); }
+.chapter-card .num { font-size: 9px; color: var(--accent); letter-spacing: .06em; font-weight: 700; }
+.chapter-card strong { display: block; font-size: 11px; margin: 5px 0; font-weight: 650; }
+.chapter-card p { font-size: 10px; color: var(--muted); margin: 0; line-height: 1.6; }
+.toast {
+  position: fixed; z-index: 99; bottom: 16px; left: 50%; transform: translate(-50%, 10px);
+  opacity: 0; pointer-events: none; background: var(--panel); border: 1px solid var(--line2);
+  border-radius: var(--radius); padding: 9px 12px; box-shadow: var(--shadow); font-size: 10.5px;
+  transition: opacity .15s ease, transform .15s ease; max-width: calc(100vw - 24px);
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+.footer { font-size: 9px; color: var(--subtle); display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; padding: 5px 2px 12px; align-items: center; }
+.plot { width: 100%; height: auto; display: block; background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius); margin: 6px 0; }
+
+/* Responsive and print */
+@media (max-width: 1080px) {
+  .layout { grid-template-columns: 220px minmax(0, 1fr); }
+  main { padding: 20px 18px 32px; }
+}
+@media (max-width: 840px) {
+  .topbar { min-height: 58px; height: auto; flex-wrap: wrap; gap: 9px; padding: 9px 12px; }
+  .top-meta { display: none; }
+  .top-actions { margin-left: auto; gap: 5px; }
+  .top-actions label { display: none; }
+  .layout { display: block; }
+  .sidebar { position: static; height: auto; max-height: none; border: 0; border-bottom: 1px solid var(--line); padding: 12px; }
+  .tree { max-height: 240px; overflow: auto; }
+  .side-foot { margin-top: 12px; }
+  main { padding: 17px 12px 26px; }
+  .idea { grid-template-columns: 1fr; }
+  .mental { order: -1; }
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .chapter-cards, .two, .lab-cols { grid-template-columns: 1fr; }
+}
+@media (max-width: 520px) {
+  .brand { font-size: 10.5px; gap: 5px; }
+  .top-actions select { max-width: 86px; padding: 5px; font-size: 9.5px; }
+  .top-actions .btn { padding: 5px 7px; font-size: 9.5px; }
+  .chapter-cards, .tiles { grid-template-columns: 1fr; }
+  .home-hero { padding: 15px; }
+  .home-hero h1, .header h1 { font-size: 20px; }
+  .body, .panel-head { padding-left: 12px; padding-right: 12px; }
+  .footer { display: block; }
+  .footer span { display: block; margin-bottom: 5px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
+}
+@media print {
+  .topbar, .sidebar, .header-actions, .lab-top, .btn, .toast { display: none !important; }
+  .layout { display: block; }
+  main { padding: 0; max-width: none; }
+  .panel, .home-hero { break-inside: avoid; box-shadow: none; }
+  body { background: #fff; color: #111; }
+}
+</style>
+</head>
+<body>
 <header class="topbar">
-  <a class="brand" href="#home" id="homeLink"><span class="brand-mark">Az</span><span><strong>Az NLP &amp; Information Retrieval Lab</strong><small>NLP · IR · RAG</small></span></a>
+  <a class="brand" href="#home" id="homeLink" aria-label="aznur NLP and Information Retrieval Lab home"><span class="brand-word">aznur</span><span class="brand-divider">/</span><span class="brand-name">nlp &amp; ir lab</span></a>
   <div class="top-meta" id="catalogCount"></div>
   <div class="top-actions">
     <label for="themeSelect">Theme</label>
@@ -222,14 +536,14 @@ const RAW=[
  mental:"Which language's character statistics match this text?",
  mentalText:"Build a profile of character n-grams per language. Score the input against each profile. The best match wins.",
  steps:["Build or load character n-gram profiles per language.","Compute the n-gram profile of the input.","Score each language by similarity (cosine, out-of-place).","Return the top language and optionally a confidence."],
- pseudo:"Cavnar-Trenkle (1994):\n  for each language L:\n    profile[L] = top 300-400 character n-grams by frequency\n  score(L, text) = sum over n-grams of |rank_L(g) - rank_text(g)|\n  return argmin_L score(L, text)\n\nModern:\n  fastText lid.176 (176 languages, 0.5 MB)\n  CLD3 (Google, char n-gram + neural)\n  langid.py (naive Bayes over byte n-grams)\n\nShort text is hard:\n  \"yes\" could be English, German, Spanish, ...\n  use context, metadata, or a user setting\n\nMixing languages:\n  code-switching needs per-token detection",
+ pseudo:"Cavnar-Trenkle (1994):\n  for each language L:\n    profile[L] = top 300-400 character n-grams by frequency\n  score(L, text) = sum over n-grams of |rank_L(g) - rank_text(g)|\n  return argmin_L score(L, text)\n\nModern:\n  fastText lid.176: 176 languages; compressed lid.176.ftz is about 917 kB and the larger lid.176.bin is about 126 MB\n  CLD3 (Google, char n-gram + neural)\n  langid.py (naive Bayes over byte n-grams)\n\nShort text is hard:\n  \"yes\" could be English, German, Spanish, ...\n  use context, metadata, or a user setting\n\nMixing languages:\n  code-switching needs per-token detection",
  invariant:"The method assumes the text is long enough to have a distinctive character distribution. Short text is unreliable.",
  uses:"Web crawling, search, translation routing, content moderation.",
  strength:"Fast, no training, works for long text.",
  limits:"Fails on short text, code-switching, transliteration, and closely related languages.",
  pitfall:"Detecting on a single word gives wrong results. Use a minimum length or fall back to a default.",
  question:"How long should a text be for reliable language detection?",
- answer:"About 20+ characters for character n-gram methods. Below 10 characters, accuracy drops sharply.",
+ answer:"There is no universal minimum. Character n-gram methods usually become more reliable as text gets longer; a single short word may be ambiguous. Choose a minimum length by testing on your own languages and data.",
  demo:"none",sample:"",refs:[
   ["Cavnar and Trenkle, N-gram-based text categorization, SDAIR 1994","https://www.researchgate.net/publication/2375540_N-Gram-Based_Text_Categorization"],
   ["Joulin et al., FastText.zip: Compressing text classification models, ICLR 2017","https://arxiv.org/abs/1612.03651"],
@@ -272,9 +586,9 @@ const RAW=[
 {id:"sentencepiece",title:"SentencePiece",level:4,kind:"Subword",status:"Concept lesson",
  summary:"SentencePiece trains subword tokenizers directly on raw text without pre-tokenization. It treats the input as a stream of Unicode characters and supports BPE and Unigram.",
  mental:"Subword tokenization without a separate tokenizer",
- mentalText:"SentencePiece replaces spaces with a special meta symbol (▁) and works on the raw stream. The model is reversible: decode gives back the original text.",
+ mentalText:"SentencePiece can replace spaces with a special meta symbol (▁) and works on raw text. A round trip can restore the input when the configured normalization is lossless; normalization settings may change the original text.",
  steps:["Normalize the raw text (optional).","Replace spaces with a meta symbol.","Train BPE or Unigram on the character stream.","Encode: apply the model. Decode: reverse the meta symbol."],
- pseudo:"SentencePiece:\n  replace ' ' with '▁'\n  train BPE or Unigram on the stream\n  the vocabulary contains pieces like '▁the', 'ing', '▁a'\n\nEncoding:\n  tokenizer.encode('Hello world') -> ['▁Hello', '▁world']\n\nDecoding:\n  tokenizer.decode(['▁Hello', '▁world']) -> 'Hello world'\n\nAdvantages:\n  language-independent: no pre-tokenizer\n  reversible: decode(encode(x)) == x\n  handles CJK, Thai, emoji\n\nUsed in:\n  T5, mT5, ALBERT, XLNet, LLaMA, Mistral\n  Google's multilingual models",
+ pseudo:"SentencePiece:\n  replace ' ' with '▁'\n  train BPE or Unigram on the stream\n  the vocabulary contains pieces like '▁the', 'ing', '▁a'\n\nEncoding:\n  tokenizer.encode('Hello world') -> ['▁Hello', '▁world']\n\nDecoding:\n  tokenizer.decode(['▁Hello', '▁world']) -> 'Hello world'\n\nAdvantages:\n  language-independent: no pre-tokenizer\n  round-trip: decode(encode(x)) restores x when normalization/configuration is lossless\n  handles CJK, Thai, emoji\n\nUsed in:\n  T5, mT5, ALBERT, XLNet, LLaMA, Mistral\n  Google's multilingual models",
  invariant:"The meta symbol must be distinct from any real character. SentencePiece uses U+2581 (▁).",
  uses:"Multilingual models, T5, LLaMA, Mistral, any model that needs a language-agnostic tokenizer.",
  strength:"Language-independent, reversible, simple pipeline.",
@@ -292,7 +606,7 @@ const RAW=[
  mental:"Predict the next word from the last n-1 words",
  mentalText:"A bigram model: P(w_t | w_{t-1}) = count(w_{t-1}, w_t) / count(w_{t-1}). Trigram: condition on the last two words. Smoothing handles unseen n-grams.",
  steps:["Tokenize the corpus.","Count n-grams and (n-1)-grams.","Estimate conditional probabilities.","Apply smoothing (Laplace, add-k, Kneser-Ney).","Compute perplexity on a test corpus."],
- pseudo:"Maximum likelihood:\n  P(w_t | w_{t-1}) = count(w_{t-1}, w_t) / count(w_{t-1})\n\nLaplace (add-1) smoothing:\n  P(w_t | w_{t-1}) = (count(w_{t-1}, w_t) + 1) / (count(w_{t-1}) + V)\n  V = vocabulary size\n\nPerplexity:\n  PP(W) = exp(- (1/N) sum log P(w_i | history))\n  lower is better\n  PP = 1 means perfect prediction\n  PP = V means uniform random\n\nKneser-Ney:\n  absolute discounting + continuation counts\n  the standard n-gram smoothing method",
+ pseudo:"Maximum likelihood:\n  P(w_t | w_{t-1}) = count(w_{t-1}, w_t) / count(w_{t-1})\n\nLaplace (add-1) smoothing:\n  P(w_t | w_{t-1}) = (count(w_{t-1}, w_t) + 1) / (count(w_{t-1}) + V)\n  V = vocabulary size\n\nPerplexity:\n  PP(W) = exp(- (1/N) sum log P(w_i | history))\n  lower is better\n  PP = 1 means perfect prediction\n  PP = V for a uniform distribution over V possible next tokens\n\nKneser-Ney:\n  absolute discounting + continuation counts\n  the standard n-gram smoothing method",
  invariant:"The chain rule factorizes the joint probability into conditionals. The Markov assumption truncates the history.",
  uses:"Speech recognition, MT, spelling correction, keyboard prediction, baselines.",
  strength:"Simple, fast, interpretable, strong baseline.",
@@ -344,7 +658,7 @@ const RAW=[
  mental:"Count words per class, multiply the probabilities",
  mentalText:"P(class | document) proportional to P(class) * product of P(word | class). Use Laplace smoothing to handle unseen words.",
  steps:["Tokenize and build the vocabulary.","Count word occurrences per class.","Estimate P(word | class) with Laplace smoothing.","Classify a document by argmax of the log posterior."],
- pseudo:"Multinomial Naive Bayes:\n  P(c) = count(c) / N\n  P(w | c) = (count(w, c) + alpha) / (count(c) + alpha V)\n\nClassification:\n  c_hat = argmax_c [ log P(c) + sum_w count(w, d) log P(w | c) ]\n\nAlpha = 1 is Laplace smoothing.\nAlpha < 1 is common for text.\n\nVariants:\n  Bernoulli NB: presence/absence, penalizes absent words\n  Complement NB: for imbalanced classes\n  TF-IDF weighted NB: use tf-idf instead of counts",
+ pseudo:"Multinomial Naive Bayes:\n  P(c) = count(c) / N\n  P(w | c) = (count(w, c) + alpha) / (N_c + alpha V)\n  N_c = total word-token count in documents of class c (not number of documents)\n\nClassification:\n  c_hat = argmax_c [ log P(c) + sum_w count(w, d) log P(w | c) ]\n\nAlpha = 1 is Laplace smoothing.\nAlpha < 1 is common for text.\n\nVariants:\n  Bernoulli NB: presence/absence, penalizes absent words\n  Complement NB: for imbalanced classes\n  TF-IDF weighted NB: use tf-idf instead of counts",
  invariant:"The independence assumption is almost always violated, but the classifier still works well in practice.",
  uses:"Spam filtering, sentiment analysis, topic classification, language ID.",
  strength:"Very fast. Works with small data. Interpretable.",
@@ -449,7 +763,7 @@ const RAW=[
  mentalText:"A lexicon stores stems. FST rules handle affixes and phonological changes. Composition gives an efficient analyzer and generator.",
  steps:["Build a lexicon of stems and their features.","Write FST rules for affixes and morphophonology.","Compose the lexicons and rules into one transducer.","Apply it to analyze or generate words."],
  pseudo:"FST components:\n  lexicon: stem -> (stem, features)\n  rules: two-level constraints (e.g. y -> i before -es)\n  composition: lexicon . rules\n\nAnalysis:\n  surface form -> morphological features\n  e.g. 'cats' -> cat +N +Pl\n\nGeneration:\n  features -> surface form\n  cat +N +Pl -> cats\n\nTools:\n  HFST, Foma, OpenFST, Xerox xfst\n  used in Apertium, Giellatekno, Uniparser\n\nLanguages:\n  excellent for morphologically rich languages\n  Finnish, Turkish, Hungarian, Arabic, Inuktitut",
- invariant:"The transducer must be deterministic and minimal for efficiency. Composition must preserve the mapping.",
+ invariant:"Determinization and minimization can improve efficiency when valid, but the transducer must preserve the intended mapping between word forms and analyses.",
  uses:"Morphological analysis, spell checking, machine translation, information retrieval for morphologically rich languages.",
  strength:"Compact, bidirectional, handles complex morphology.",
  limits:"Writing rules for a new language takes expert time. Ambiguity requires disambiguation.",
@@ -463,7 +777,7 @@ const RAW=[
 {id:"dependency-parsing",title:"Dependency parsing",level:5,kind:"Parsing",status:"Concept lesson",
  summary:"Dependency parsing links each word to its syntactic head with a labeled edge. The result is a tree. Transition-based and graph-based parsers are the two main families.",
  mental:"Every word points to its syntactic parent",
- mentalText:"The root is the main verb. Each word has one head. Labels are relations (nsubj, dobj, amod, ...). The tree captures grammatical structure.",
+ mentalText:"The root is often the main predicate. Every non-root word has one syntactic head. Labels describe relations (nsubj, obj, amod, ...), and the tree captures grammatical structure.",
  steps:["Define the dependency scheme (Universal Dependencies).","Train a transition-based or graph-based parser.","Predict the head and label for each token.","Enforce a valid tree (single root, no cycles)."],
  pseudo:"Transition-based (arc-standard):\n  state: stack, buffer, arcs\n  transitions:\n    SHIFT: push buffer[0] to stack\n    LEFT-ARC(l): add arc stack[-1] <- stack[-2], pop stack[-2]\n    RIGHT-ARC(l): add arc stack[-2] -> stack[-1], pop stack[-1]\n  oracle: from a treebank\n  classifier: neural (BiLSTM, transformer) or greedy\n\nGraph-based (MST):\n  score every (head, dep, label) pair\n  find the maximum spanning tree\n  Chu-Liu-Edmonds algorithm\n\nEvaluation:\n  UAS: unlabelled attachment score\n  LAS: labelled attachment score\n\nUniversal Dependencies: 100+ languages, consistent labels.",
  invariant:"The output must be a tree: one root, each word one head, no cycles.",
@@ -500,10 +814,10 @@ const RAW=[
  mental:"A dictionary from terms to document lists",
  mentalText:"For each term, store a sorted list of document IDs. To answer 'A AND B', intersect the two postings lists. 'A OR B' unions them.",
  steps:["Tokenize and normalize each document.","Build a term -> postings list dictionary.","Sort postings by document ID.","Answer queries with intersection / union / negation."],
- pseudo:"Inverted index:\n  index = {}  # term -> sorted list of doc IDs\n  for doc_id, doc in enumerate(documents):\n    for term in tokenize(doc):\n      index[term].append(doc_id)\n\nQuery processing:\n  AND: intersect sorted postings lists (two-pointer)\n  OR: union sorted postings lists\n  NOT: complement against the document set\n\nSkip pointers:\n  every sqrt(len) position, store a skip pointer\n  intersect in O(sqrt(L1) + sqrt(L2)) instead of O(L1 + L2)\n\nCompression:\n  gap encoding: store differences between doc IDs\n  variable-byte, gamma codes\n\nPositional index:\n  store positions within the document\n  allows phrase queries and proximity ranking",
+ pseudo:"Inverted index:\n  index = {}  # term -> sorted list of doc IDs\n  for doc_id, doc in enumerate(documents):\n    for term in tokenize(doc):\n      index[term].append(doc_id)\n\nQuery processing:\n  AND: intersect sorted postings lists (two-pointer)\n  OR: union sorted postings lists\n  NOT: complement against the document set\n\nSkip pointers:\n  every sqrt(len) position, store a skip pointer\n  skip pointers often reduce work in practice; worst-case complexity remains O(L1 + L2)\n\nCompression:\n  gap encoding: store differences between doc IDs\n  variable-byte, gamma codes\n\nPositional index:\n  store positions within the document\n  allows phrase queries and proximity ranking",
  invariant:"Postings lists must be sorted by document ID for efficient intersection.",
  uses:"Search engines, Boolean retrieval, faceted search, log analysis.",
- strength:"Simple, fast, exact. Scales to billions of documents.",
+ strength:"Simple, fast and exact for Boolean matches. Efficient postings and compression can support very large collections.",
  limits:"Exact term matching. No semantics, no ranking (Boolean only).",
  pitfall:"Stopword removal speeds up indexing but breaks phrase queries.",
  question:"How do you intersect two sorted postings lists?",
@@ -553,19 +867,19 @@ const RAW=[
  mentalText:"Encode query with a query encoder, documents with a document encoder. At search time, encode the query and find the nearest document vectors.",
  steps:["Choose a bi-encoder (e.g. sentence-transformers, DPR, E5).","Encode all documents offline.","Build an index over the document vectors (FAISS, HNSW, ScaNN).","Encode the query and retrieve the top-K nearest neighbours."],
  pseudo:"Bi-encoder:\n  q_emb = E_q(query)\n  d_emb = E_d(document)\n  score = cos(q_emb, d_emb) or dot product\n\nContrastive training:\n  in-batch negatives: other documents in the batch are negatives\n  hard negatives: mine documents that are close but not relevant\n  loss: InfoNCE / cross-entropy over the batch\n\nIndex types:\n  exact: brute force (slow for large corpora)\n  IVF: k-means partitioning + inverted lists\n  HNSW: hierarchical navigable small-world graph\n  ScaNN: anisotropic vector quantization\n\nEvaluation:\n  recall@k, MRR, NDCG\n  top-K retrieved vs gold relevant",
- invariant:"The bi-encoder must be trained with contrastive loss. Similar queries and documents must have close embeddings.",
+ invariant:"The query and document encoders must produce compatible representations. Contrastive training is common for retrieval models, but the exact training objective depends on the model.",
  uses:"Semantic search, RAG retrieval, recommendation, deduplication, clustering.",
  strength:"Fast retrieval at scale. Handles synonyms and paraphrase.",
  limits:"Less precise than cross-encoders. Requires a trained encoder and an index.",
  pitfall:"Using a general-purpose sentence encoder without fine-tuning on the target domain gives poor retrieval.",
  question:"What is the difference between a bi-encoder and a cross-encoder?",
- answer:"A bi-encoder encodes query and document separately, so documents can be pre-encoded and retrieved with ANN. A cross-encoder takes query and document together, scores them jointly, and is much slower but more accurate.",
+ answer:"A bi-encoder encodes the query and document separately, so document vectors can be prepared ahead of time and searched efficiently. A cross-encoder scores the query and document together; this often improves reranking on the right task, but accuracy depends on its training data and evaluation setup.",
  demo:"dense-embeddings",sample:"the cat sat on the mat\nthe dog sat on the log\nthe cat ate the rat\ncats and dogs are pets\nkittens and puppies are cute",refs:[
   ["Karpukhin et al., Dense passage retrieval for open-domain question answering, EMNLP 2020","https://arxiv.org/abs/2004.04906"],
   ["Reimers and Gurevych, Sentence-BERT, EMNLP 2019","https://arxiv.org/abs/1908.10084"],
   ["Johnson, Douze, Jégou, Billion-scale similarity search with GPUs (FAISS), IEEE TBD 2019","https://arxiv.org/abs/1702.08734"]]},
 {id:"vector-indexes",title:"Vector indexes and approximate nearest neighbours",level:5,kind:"Vector search",status:"Concept lesson",
- summary:"Exact nearest neighbour search is O(N) per query. Approximate indexes trade a little recall for a large speedup. HNSW, IVF and product quantization are the main families.",
+ summary:"Exact nearest-neighbour search compares a query with all N vectors (roughly O(Nd) for vector dimension d). Approximate indexes can be faster, with a possible loss in recall. HNSW, IVF and product quantization are common families.",
  mental:"A data structure that finds close vectors fast",
  mentalText:"HNSW builds a multi-layer graph and walks from the top. IVF partitions with k-means. PQ compresses vectors into short codes and re-ranks.",
  steps:["Choose the index type based on scale and latency.","Build the index over the document vectors.","Tune the parameters (ef, nprobe, M).","Measure recall@k vs speed."],
@@ -600,14 +914,14 @@ const RAW=[
   ["Bruch, Gai, Ingber, An analysis of fusion functions for hybrid retrieval, ACM TOIS 2024","https://doi.org/10.1145/3596512"]]},
 /* ================= 9 Reranking and QA ================= */
 {id:"cross-encoder",title:"Cross-encoders and reranking",level:5,kind:"Reranking",status:"Runnable teaching lab",
- summary:"A cross-encoder takes the query and a candidate passage together and produces a relevance score. It is much more accurate than a bi-encoder but too slow for first-stage retrieval, so it is used for reranking the top-K.",
+ summary:"A cross-encoder takes the query and candidate passage together and produces a relevance score. It often improves reranking quality but is usually too costly for first-stage search over a huge collection.",
  mental:"Score each candidate against the query jointly",
  mentalText:"Concatenate query and passage, feed to a transformer, take the [CLS] or pooled output. Use a cross-entropy loss during training.",
  steps:["Retrieve top-K candidates with a fast retriever.","For each candidate, run the cross-encoder.","Sort by the cross-encoder score.","Return the top-N."],
  pseudo:"Cross-encoder:\n  input: [CLS] query [SEP] passage [SEP]\n  output: relevance score\n\nTraining:\n  positive pairs: (query, relevant passage)\n  negative pairs: (query, random or hard negative)\n  loss: cross-entropy over a batch\n\nReranking pipeline:\n  1. Bi-encoder or BM25 retrieves top-K (K = 50-1000)\n  2. Cross-encoder scores each candidate\n  3. Sort by score, return top-N\n\nTrade-offs:\n  cross-encoder: O(K) transformer forward passes per query\n  bi-encoder: O(1) query encoding + ANN lookup\n  use cross-encoder for K up to a few hundred\n\nModels:\n  monoBERT, monoELECTRA, MiniLM cross-encoder\n  BGE-reranker, Cohere Rerank",
- invariant:"The cross-encoder must be trained on the same task distribution. Domain shift hurts accuracy.",
+ invariant:"A cross-encoder works best when its training data resembles the target task. Domain shift can reduce accuracy; its score is not automatically a calibrated probability.",
  uses:"Search reranking, RAG, QA, recommendation, evidence ranking.",
- strength:"Very accurate. Can model fine-grained interactions.",
+ strength:"Often improves relevance ranking because it can model detailed query-document interactions.",
  limits:"Slow: O(K) forward passes. Not usable for first-stage retrieval.",
  pitfall:"Reranking too many candidates is slow. Choose K based on latency budget.",
  question:"Why is a cross-encoder more accurate than a bi-encoder?",
@@ -617,14 +931,14 @@ const RAW=[
   ["Nogueira, Jiang, Lin, Document ranking with a pretrained sequence-to-sequence model, Findings of EMNLP 2020","https://arxiv.org/abs/2003.06713"],
   ["Cohere Rerank documentation","https://docs.cohere.com/docs/rerank-2"]]},
 {id:"lambdamart",title:"Learning to rank and LambdaMART",level:5,kind:"Learning to rank",status:"Concept lesson",
- summary:"Learning to rank (LTR) trains a model to order documents by relevance. LambdaMART is a gradient-boosted tree method with a lambda gradient that directly optimizes NDCG.",
+ summary:"Learning to rank (LTR) trains a model to order documents by relevance. LambdaMART is a gradient-boosted tree method that uses pairwise training signals weighted by changes in ranking metrics such as NDCG.",
  mental:"Train a model to rank, not to classify",
  mentalText:"LTR uses query-document features. LambdaMART computes lambdas as the NDCG change from swapping two documents, then fits a regression tree to the lambdas.",
  steps:["Extract query-document features (BM25, tf-idf, click features, embeddings).","Group training data by query.","Compute lambdas from the NDCG swap delta.","Fit a regression tree to the lambdas.","Add the tree to the ensemble with a learning rate."],
  pseudo:"LambdaMART:\n  for each query q:\n    sort documents by current score\n    for each pair (i, j) with different relevance:\n      delta = |NDCG after swapping i, j - NDCG|\n      lambda_ij = delta * (1 / (1 + exp(score_i - score_j)))\n    lambda_i = sum_j lambda_ij\n  fit a regression tree to predict lambdas\n  add tree to the ensemble: score += eta * tree\n\nNDCG@k:\n  DCG@k = sum_{i=1..k} (2^rel_i - 1) / log2(i + 1)\n  NDCG@k = DCG@k / ideal_DCG@k\n\nFeatures:\n  BM25 score, tf-idf, doc length, PageRank\n  query-document embedding similarity\n  click-through rate, dwell time\n\nOther methods:\n  RankNet, RankSVM, ListNet, LambdaRank",
  invariant:"LTR requires query-level grouping. Documents from different queries must not be compared.",
  uses:"Web search, e-commerce ranking, recommendation, ad ranking.",
- strength:"Directly optimizes ranking metrics. Handles many features.",
+ strength:"Uses ranking-oriented training signals and handles many query-document features.",
  limits:"Needs labelled relevance data (clicks, editorial). Feature engineering matters.",
  pitfall:"Training with per-document labels instead of per-query groups loses the ranking signal.",
  question:"What is NDCG?",
@@ -669,14 +983,14 @@ const RAW=[
   ["LangChain text splitters documentation","https://python.langchain.com/docs/modules/data_connection/document_transformers/"],
   ["Anthropic, Contextual retrieval, 2024","https://www.anthropic.com/news/contextual-retrieval"]]},
 {id:"rag-pipeline",title:"Retrieval-augmented generation",level:5,kind:"RAG",status:"Runnable teaching lab",
- summary:"RAG retrieves relevant passages and conditions a language model on them to generate an answer. It grounds the model in the retrieved evidence and enables citations.",
+ summary:"RAG retrieves relevant passages and gives them to a language model as context for an answer. This can ground the answer in source evidence and support citations, but does not guarantee correctness.",
  mental:"Retrieve evidence, then generate with the evidence in context",
  mentalText:"Retrieve top-K passages with a hybrid retriever, optionally rerank, then pass the top-N passages to the LLM with the question. The LLM generates an answer and cites the passages.",
  steps:["Chunk and index the corpus.","Retrieve top-K with BM25 + dense + fusion.","Rerank with a cross-encoder.","Pass top-N passages and the question to the LLM.","Generate the answer with citations."],
  pseudo:"RAG pipeline:\n  1. Index:\n     chunks = chunk(corpus)\n     index = embed_and_index(chunks)\n  2. Retrieve:\n     candidates = hybrid_retrieve(query, index, top_k=50)\n  3. Rerank:\n     ranked = cross_encoder(query, candidates, top_n=5)\n  4. Generate:\n     prompt = build_prompt(query, ranked)\n     answer = llm.generate(prompt)\n  5. Cite:\n     attach source doc IDs and spans\n\nPrompt template:\n  Answer the question using only the context below.\n  Cite sources as [1], [2], ...\n\n  Context:\n  [1] <passage 1>\n  [2] <passage 2>\n\n  Question: <query>\n  Answer:\n\nFailure modes:\n  retrieval miss: the answer is not in the top-K\n  distraction: irrelevant passages confuse the LLM\n  hallucination: the LLM ignores the context\n  context overflow: too many passages, truncated",
  invariant:"The answer must be grounded in the retrieved passages. Citations must point to the passages actually used.",
  uses:"Document QA, customer support, enterprise search, research assistants.",
- strength:"Grounds the LLM in evidence. Updates without retraining. Citations.",
+ strength:"Can ground answers in retrieved evidence, update source knowledge without retraining the language model, and provide citations.",
  limits:"Depends on retrieval quality. Context window limits. Prompt injection risk.",
  pitfall:"Feeding too many passages dilutes the signal and can exceed the context window. Rerank and keep the top-N.",
  question:"What are the main failure modes of RAG?",
@@ -704,7 +1018,43 @@ const RAW=[
   ["Thakur et al., BEIR: A heterogeneous benchmark for zero-shot evaluation of information retrieval models, NeurIPS 2021","https://arxiv.org/abs/2104.08663"]]}
 ];
 
-const LESSONS=RAW.map(mk);
+
+/* Beginner-first explanations. Original technical lesson content remains in RAW unchanged,
+   except for the explicitly corrected claims documented in the refinement notes below. */
+const BEGINNER_EXPLANATIONS = {
+  "text-prep": "Before a computer can search or study text, it helps to make the text consistent and split it into useful pieces. Those choices affect every later step.",
+  "stemming-lemmatization": "A word can appear in many forms, such as 'connect', 'connected' and 'connecting'. Stemming trims endings with rules; lemmatization tries to find the word's dictionary base form.",
+  "language-detection": "When a system receives text in different languages, it first guesses which language it is seeing. Longer passages usually provide more clues than a single short word.",
+  "bpe": "BPE starts with small text pieces and repeatedly joins neighboring pieces that appear together often. This creates reusable pieces for common words and word parts.",
+  "wordpiece-unigram": "These are two ways to build a vocabulary of word pieces. WordPiece greedily chooses the longest known piece at each step; Unigram chooses a likely sequence from several possible segmentations.",
+  "sentencepiece": "SentencePiece learns subword pieces directly from raw text. It can handle languages without spaces between words, so a separate word-splitting step is not always needed.",
+  "ngram-lm": "An n-gram model guesses the next word using a small number of words before it. Perplexity measures how uncertain the model is on test text; lower is usually better when the same evaluation setup is used.",
+  "smoothing-backoff": "A small training set will miss many possible word sequences. Smoothing gives unseen sequences some probability, backoff tries a shorter context when needed, and interpolation combines several context lengths.",
+  "word-embeddings": "Word embeddings turn words into lists of numbers learned from how words appear. Words used in similar ways may have nearby vectors, but each embedding method learns those numbers differently.",
+  "naive-bayes": "Naive Bayes estimates which category best fits a document by checking how often its words appear in each category. Its independence assumption is simplified, but it can still be a useful fast baseline.",
+  "linear-svm": "A linear SVM and logistic regression both learn a boundary that separates text labels. An SVM focuses on separating classes with a margin; logistic regression models a probability-like score for each class.",
+  "crf-viterbi": "Sequence labeling assigns a tag to each token, such as a person's name or a place. HMMs and CRFs score possible tag sequences; Viterbi finds the highest-scoring sequence for the model being used.",
+  "tfidf": "TF-IDF gives a word more weight when it appears in one document but is uncommon across the whole collection. Common words usually contribute less to deciding which document is relevant.",
+  "textrank": "TextRank links words or sentences in a graph, then ranks them by how they connect to other items. Highly ranked words can be useful keyword candidates.",
+  "lda-nmf": "Topic models look for repeated word patterns across many documents. LDA describes topics as probability distributions; NMF breaks a non-negative document-word matrix into smaller factors.",
+  "fst-morphology": "Morphology studies how words are built from meaningful parts. A finite-state transducer uses states and transitions to map a word form to an analysis, or between related forms when the transducer supports it.",
+  "dependency-parsing": "Dependency parsing connects words with directed links that show grammatical relationships, such as which word is the subject or object of a verb.",
+  "constituency-parsing": "A constituency parser groups words into nested phrases, such as noun phrases and verb phrases. CYK is a table-based parsing algorithm that needs a grammar in a specific form.",
+  "inverted-index": "An inverted index flips the usual layout: instead of listing words inside each document, it stores the documents that contain each word. That makes keyword search much faster.",
+  "bm25": "BM25 ranks documents using the query words, how often each word appears, how rare it is, and the document's length. Repeating a word helps, but the benefit gradually levels off.",
+  "query-expansion": "A search query may be too short or use different words from the documents. Expansion adds likely related terms, while spelling correction fixes typos. Both can help, but they can also add distracting terms.",
+  "dense-embeddings": "An encoder turns a query or document into a vector: a list of numbers. The search system compares vectors to find passages with similar meaning, even when they do not use exactly the same words.",
+  "vector-indexes": "A vector index helps find nearby vectors without comparing the query with every vector in a large collection. Approximate methods can be much faster, but may miss some good matches.",
+  "hybrid-retrieval": "Keyword search is good at exact names, IDs and rare terms; vector search can find paraphrases. Hybrid retrieval combines the two to cover more kinds of queries.",
+  "cross-encoder": "A fast first search finds candidate passages. A cross-encoder reads each query and candidate together to judge relevance in more detail. This often improves ranking, but takes more work per candidate.",
+  "lambdamart": "Learning to rank uses examples of relevant and irrelevant results to learn how to order documents. LambdaMART builds a set of decision trees using training signals related to ranking quality.",
+  "extractive-qa": "A retriever first finds likely passages. An extractive question-answering model then selects an answer span from one of those passages, rather than writing a new answer from scratch.",
+  "chunking": "Long documents are split into smaller passages so search and language models can process them. Some overlap can preserve context at the edges, but too much overlap creates duplicate content.",
+  "rag-pipeline": "RAG first searches for useful source passages, then gives those passages to a language model to help answer a question. Retrieval can help ground an answer, but it does not guarantee that the answer is correct.",
+  "rag-evaluation": "Retrieval metrics check whether useful documents were found and how high they appear in the results. Each metric measures a different goal, so retrieval quality and answer quality should both be checked."
+};
+
+const LESSONS = RAW.map((record) => ({ ...mk(record), beginnerExplanation: BEGINNER_EXPLANATIONS[record.id] || record.summary }));
 const byId=Object.fromEntries(LESSONS.map(x=>[x.id,x]));
 
 /* ============================================================
@@ -2076,8 +2426,8 @@ function demoRag(text){
  const ans=answer(query,topK.map(([i])=>[i,docs[i]]));
  const answerText=ans.passage>=0?`${ans.text} [${topK.findIndex(([i])=>i===ans.passage)+1}]`:'(no answer found)';
  return {
-  encoded:`Question: ${query}\n\nRanked documents:\n${ranked.map(([i,s],r)=>`  ${r+1}. Doc ${i+1} (score ${fmtNum(s,3)}): ${docs[i]}`).join('\n')}\n\nTop-3 passages given to the LLM:\n${topK.map(([i,s],r)=>`  [${r+1}] Doc ${i+1}: ${docs[i]}`).join('\n')}\n\nGenerated answer (extractive with citation):\n  ${answerText}`,
-  decoded:`RAG retrieves top-K passages, optionally reranks, then conditions the LLM on the passages. The answer here is extractive with citations; a real system would use an LLM to generate.`
+  encoded:`Question: ${query}\n\nRanked documents:\n${ranked.map(([i,s],r)=>`  ${r+1}. Doc ${i+1} (score ${fmtNum(s,3)}): ${docs[i]}`).join('\n')}\n\nTop-3 passages selected as context (no LLM is called in this demo):\n${topK.map(([i,s],r)=>`  [${r+1}] Doc ${i+1}: ${docs[i]}`).join('\n')}\n\nGenerated answer (extractive with citation):\n  ${answerText}`,
+  decoded:`This teaching demo retrieves top-K passages and selects an extractive sentence with a citation. It does not call an LLM. A production RAG system would pass selected context to a language model and evaluate whether its answer is grounded in that context.`
  };
 }
 
@@ -2150,10 +2500,28 @@ function runLab(l,initial){
 /* ============================================================
    State and shell
    ============================================================ */
-const state={page:'home',current:null,completed:new Set(),bookmarks:new Set(),theme:'system',drafts:{}};
-const $=s=>document.querySelector(s);
-const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function toast(msg){const el=$('#toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),1900)}
+const state = {
+  page: 'home',
+  current: null,
+  completed: new Set(),
+  bookmarks: new Set(),
+  theme: 'system',
+  drafts: {}
+};
+const $ = (selector) => document.querySelector(selector);
+const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ({
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#39;'
+}[character]));
+function toast(message) {
+  const element = $('#toast');
+  element.textContent = message;
+  element.classList.add('show');
+  setTimeout(() => element.classList.remove('show'), 1900);
+}
 function save(){try{localStorage.setItem('az-nlp-ir-lab-v1',JSON.stringify({schemaVersion:1,completed:[...state.completed],bookmarks:[...state.bookmarks],theme:state.theme,current:state.current,drafts:state.drafts}))}catch(e){}}
 function load(){try{const d=JSON.parse(localStorage.getItem('az-nlp-ir-lab-v1')||'null');if(!d||d.schemaVersion!==1)return;
  state.completed=new Set((d.completed||[]).filter(id=>byId[id]));
@@ -2161,7 +2529,14 @@ function load(){try{const d=JSON.parse(localStorage.getItem('az-nlp-ir-lab-v1')|
  state.theme=['system','light','dark'].includes(d.theme)?d.theme:'system';
  state.current=byId[d.current]?d.current:null;
  state.drafts=d.drafts&&typeof d.drafts==='object'?d.drafts:{};}catch(e){}}
-function applyTheme(){let t=state.theme;if(t==='system')t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.dataset.theme=t;$('#themeSelect').value=state.theme}
+function applyTheme() {
+  let resolvedTheme = state.theme;
+  if (resolvedTheme === 'system') {
+    resolvedTheme = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+  }
+  document.documentElement.dataset.theme = resolvedTheme;
+  $('#themeSelect').value = state.theme;
+}
 function getChapter(id){return CHAPTERS.find(c=>c.ids.includes(id))||CHAPTERS[0]}
 function progress(){
  const n=state.completed.size,t=LESSONS.length;
@@ -2176,7 +2551,7 @@ function renderTree(){
  const root=$('#courseTree');root.textContent='';
  for(const c of CHAPTERS){
   if(ch!=='all'&&c.id!==ch)continue;
-  const rows=c.ids.map(id=>byId[id]).filter(x=>x&&(!q||(x.title+' '+x.summary+' '+x.kind+' '+c.title).toLowerCase().includes(q)));
+  const rows=c.ids.map(id=>byId[id]).filter(x=>x&&(!q||(x.title+' '+x.summary+' '+(x.beginnerExplanation||'')+' '+x.kind+' '+c.title).toLowerCase().includes(q)));
   if(!rows.length)continue;
   const group=document.createElement('section');
   const label=document.createElement('div');label.className='group-label';
@@ -2202,60 +2577,267 @@ function codeText(l){
  if(c&&c.python)return c.python;
  return '# CONCEPT OUTLINE, NOT EXECUTABLE PYTHON\n# Lesson: '+l.title+'\n\n# Core idea\n# '+String(l.summary||'').replace(/\n/g,'\n# ')+'\n\n# Pseudocode from the lesson\n'+String(l.pseudo||'').split('\n').map(x=>'# '+x).join('\n')+'\n';
 }
-function statusClass(l){return /Runnable/.test(l.status)?'good':'warn'}
+function statusClass(lesson) {
+  return /Runnable/.test(lesson.status) ? 'good' : 'warn';
+}
 
-function renderLesson(id){
- const l=byId[id];if(!l){renderHome();return}
- state.page='lesson';state.current=id;
- const c=getChapter(id);const index=LESSONS.indexOf(l);const next=LESSONS[(index+1)%LESSONS.length];
- const hasDemo=l.demo&&l.demo!=='none';
- const demoArea=hasDemo?`<section class="panel"><div class="panel-head"><h2>${esc(l.demoTitle||'Interactive teaching lab')}</h2><p>Everything runs in your browser. This is a teaching implementation, not a production library.</p></div><div class="body"><div class="lab-top"><label for="labInput">Input</label><button class="btn" id="resetSample">Reset sample</button><button class="btn primary" id="runLab">Run lab</button></div><textarea class="lab-input" id="labInput" aria-label="Lab input">${esc(l.sample||'')}</textarea><div class="notice info"><strong>Format:</strong> see the sample for the expected format. Most labs take either plain text, one item per line, or a small table.</div><div class="lab-cols"><div><div class="label">Output</div><div class="lab-output" id="labEncoded">Run the lab to see output.</div></div><div><div class="label">Explanation</div><div class="lab-output" id="labDecoded">Step notes appear here.</div></div></div></div></section>`:'';
- const references=refsHTML(l.refs);
- const code=state.drafts[id]??codeText(l);
- $('#mainView').innerHTML=`<div class="breadcrumb">NLP &amp; Information Retrieval Lab / ${esc(c.title)}</div>
-<header class="header">
- <div class="eyebrow">LESSON ${String(index+1).padStart(2,'0')} · ${esc(l.kind)}</div>
- <h1>${esc(l.title)}</h1>
- <p>${esc(l.summary)}</p>
- <div class="tags"><span class="tag">Level ${l.level}</span><span class="tag ${statusClass(l)}">${esc(l.status)}</span><span class="tag">${esc(c.title.replace(/^\d+(\.\d+)?\s*/,''))}</span></div>
- <div class="header-actions">
-  <button class="btn" id="bookmarkBtn">${state.bookmarks.has(id)?'★ Bookmarked':'☆ Bookmark'}</button>
-  <button class="btn primary" id="completeBtn">${state.completed.has(id)?'✓ Completed':'Mark complete'}</button>
- </div>
-</header>
-<section class="panel"><div class="panel-head"><h2>1. Understand the idea</h2><p>Plain language and a mental picture</p></div><div class="body idea"><div><p>${esc(l.summary)}</p><p><strong>What problem it solves:</strong> ${esc(l.problem)}</p><div class="takeaway"><strong>Takeaway:</strong> ${esc(l.output)}</div></div><aside class="mental"><small>Mental picture</small><strong>${esc(l.mental)}</strong><p>${esc(l.mentalText)}</p></aside></div></section>
-<section class="panel"><div class="panel-head"><h2>2. Input and output</h2><p>Know what goes in and what comes out</p></div><div class="body two"><div class="mini"><h3>Input</h3><p>${esc(l.input)}</p></div><div class="mini"><h3>Output</h3><p>${esc(l.output)}</p></div></div></section>
-<section class="panel"><div class="panel-head"><h2>3. How it works</h2><p>Step by step, with the key rule that makes it correct</p></div><div class="body two"><div>${listToHTML(l.steps)}<div class="takeaway" style="margin-top:14px"><strong>Key rule:</strong> ${esc(l.invariant)}</div></div><pre class="pseudo">${esc(l.pseudo)}</pre></div><div class="table-wrap" style="margin-top:16px"><table><thead><tr><th>Step</th><th>What happens</th><th>Why it matters</th></tr></thead><tbody>${l.trace.map(r=>`<tr>${r.map(v=>`<td>${esc(v)}</td>`).join('')}</tr>`).join('')}</tbody></table></div></section>
-${demoArea}
-<section class="panel"><div class="panel-head"><h2>4. Cost and stability</h2><p>Costs depend on corpus size, vocabulary and model. These are scope labels, not universal benchmarks.</p></div><div class="body"><div class="tiles">${l.complexity.map((x,i)=>`<div class="tile"><span>${['Time','Space','Interpretation'][i]}</span><strong>${esc(x.split(' ').slice(0,2).join(' '))}</strong><small>${esc(x)}</small></div>`).join('')}</div><div class="two" style="margin-top:12px"><div class="mini"><h3>Strengths</h3><p>${esc(l.strength)}</p></div><div class="mini"><h3>Limits</h3><p>${esc(l.limits)}</p></div></div></div></section>
-<section class="panel"><div class="panel-head"><h2>5. Code and usage</h2><p>Reference code is for learning. Real code should use a vetted library.</p></div><div class="code-head"><div><span class="tag">${codeRecord(l)?'Python example':'Concept outline, not executable'}</span> <span class="tag">Editable</span></div><div class="header-actions" style="margin:0"><button class="btn" id="copyCode">Copy code</button><button class="btn" id="downloadCode">Download</button></div></div><textarea id="codeEditor" class="code-editor" spellcheck="false" aria-label="Editable Python code">${esc(code)}</textarea><div class="code-foot"><span>${codeRecord(l)?'Reference example. The in-page lab runs its own JavaScript implementation.':'Lesson-specific outline, not an implementation.'}</span><span id="codeStatus">Local draft</span></div><div class="body"><div class="mini"><h3>Where it is used</h3><p>${esc(l.uses)}</p></div><div class="notice" style="margin-top:12px"><strong>Common pitfall:</strong> ${esc(l.pitfall)}</div></div></section>
-<section class="panel"><div class="panel-head"><h2>6. Choices and alternatives</h2><p>Pick based on the task, language and required quality</p></div><div class="body two"><div class="mini"><h3>When to use this</h3><p>${esc(l.strength)}</p></div><div class="mini"><h3>When to use something else</h3><p>${esc(l.limits)}</p></div></div></section>
-<section class="panel"><div class="panel-head"><h2>7. Check yourself</h2><p>Try to answer before you open the explanation</p></div><div class="body"><details class="practice"><summary>${esc(l.question)}</summary><p>${esc(l.answer)}</p></details></div></section>
-<section class="panel"><div class="panel-head"><h2>8. References</h2><p>Standard references for this topic</p></div><div class="body">${references}<p class="muted" style="font-size:11.5px;margin-top:14px">The labs on this page are teaching implementations. For production work use spaCy, Hugging Face Transformers, sentence-transformers, rank_bm25, scikit-learn, Gensim, Lucene, Elasticsearch, FAISS, or another vetted library.</p></div></section>
-<footer class="footer"><span>Az NLP &amp; Information Retrieval Lab · local learning</span><span>Lesson ${index+1} of ${LESSONS.length} · Next: ${esc(next.title)}</span><button class="btn" id="nextLesson">Next →</button></footer>`;
+function renderLesson(id) {
+  const lesson = byId[id];
+  if (!lesson) {
+    renderHome();
+    return;
+  }
 
- $('#bookmarkBtn').onclick=()=>{state.bookmarks.has(id)?state.bookmarks.delete(id):state.bookmarks.add(id);save();renderLesson(id);toast(state.bookmarks.has(id)?'Bookmarked':'Bookmark removed')};
- $('#completeBtn').onclick=()=>{state.completed.has(id)?state.completed.delete(id):state.completed.add(id);save();renderTree();renderLesson(id);toast(state.completed.has(id)?'Lesson completed':'Completion removed')};
- $('#nextLesson').onclick=()=>openLesson(next.id);
- $('#copyCode').onclick=async()=>{const v=$('#codeEditor').value;try{await navigator.clipboard.writeText(v);toast('Code copied')}catch{const ta=$('#codeEditor');ta.select();document.execCommand('copy');toast('Code copied')}};
- $('#downloadCode').onclick=()=>{const r=codeRecord(l);downloadText(`${id}.${r?'py':'txt'}`,$('#codeEditor').value,r?'text/x-python':'text/plain')};
- $('#codeEditor').addEventListener('input',()=>{state.drafts[id]=$('#codeEditor').value;save();$('#codeStatus').textContent='Draft saved locally'});
- if(hasDemo){
-  $('#runLab').onclick=()=>runLab(l);
-  $('#resetSample').onclick=()=>{$('#labInput').value=l.sample||'';$('#labEncoded').textContent='Run the lab to see output.';$('#labDecoded').textContent='Step notes appear here.'};
-  runLab(l,true);
- }
- renderTree();save();
- if(location.hash!==`#${id}`)history.replaceState(null,'',`#${id}`);
+  state.page = 'lesson';
+  state.current = id;
+  const chapter = getChapter(id);
+  const index = LESSONS.indexOf(lesson);
+  const next = LESSONS[(index + 1) % LESSONS.length];
+  const hasDemo = lesson.demo && lesson.demo !== 'none';
+  const beginnerText = lesson.beginnerExplanation || lesson.summary;
+
+  const demoArea = hasDemo ? `
+    <section class="panel">
+      <div class="panel-head">
+        <h2>${esc(lesson.demoTitle || 'Interactive teaching lab')}</h2>
+        <p>This small lab runs locally in your browser. It demonstrates the idea; it is not a production library or a pretrained model.</p>
+      </div>
+      <div class="body">
+        <div class="lab-top">
+          <label for="labInput">Input</label>
+          <button class="btn" id="resetSample" type="button">Reset sample</button>
+          <button class="btn primary" id="runLab" type="button">Run lab</button>
+        </div>
+        <textarea class="lab-input" id="labInput" aria-label="Lab input">${esc(lesson.sample || '')}</textarea>
+        <div class="notice info"><strong>Input format:</strong> Follow the sample format. Labs may take plain text, one item per line, or a small table.</div>
+        <div class="lab-cols">
+          <div><div class="label">Output</div><div class="lab-output" id="labEncoded" aria-live="polite">Run the lab to see output.</div></div>
+          <div><div class="label">Explanation</div><div class="lab-output" id="labDecoded">Step notes appear here.</div></div>
+        </div>
+      </div>
+    </section>` : '';
+
+  const references = refsHTML(lesson.refs);
+  const code = state.drafts[id] ?? codeText(lesson);
+  const codeIsExecutable = Boolean(codeRecord(lesson));
+  const chapterName = chapter.title.replace(/^\d+(\.\d+)?\s*/, '');
+
+  $('#mainView').innerHTML = `
+    <div class="breadcrumb">aznur / nlp &amp; ir lab / ${esc(chapter.title)}</div>
+    <header class="header">
+      <div class="eyebrow">LESSON ${String(index + 1).padStart(2, '0')} · ${esc(lesson.kind)}</div>
+      <h1>${esc(lesson.title)}</h1>
+      <p>${esc(beginnerText)}</p>
+      <div class="tags">
+        <span class="tag">Level ${lesson.level}</span>
+        <span class="tag ${statusClass(lesson)}">${esc(lesson.status)}</span>
+        <span class="tag">${esc(chapterName)}</span>
+      </div>
+      <div class="header-actions">
+        <button class="btn" id="bookmarkBtn" type="button">${state.bookmarks.has(id) ? '★ Bookmarked' : '☆ Bookmark'}</button>
+        <button class="btn primary" id="completeBtn" type="button">${state.completed.has(id) ? '✓ Completed' : 'Mark complete'}</button>
+      </div>
+    </header>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>1. Understand the idea</h2>
+        <p>Start with plain language, then connect it to the original technical notes.</p>
+      </div>
+      <div class="body idea">
+        <div>
+          <div class="notice info" style="margin-bottom:10px"><strong>In simple words:</strong> ${esc(beginnerText)}</div>
+          <p><strong>Technical overview:</strong> ${esc(lesson.summary)}</p>
+          <p><strong>What problem it solves:</strong> ${esc(lesson.problem)}</p>
+          <div class="takeaway"><strong>Takeaway:</strong> ${esc(lesson.output)}</div>
+        </div>
+        <aside class="mental">
+          <small>Mental picture</small>
+          <strong>${esc(lesson.mental)}</strong>
+          <p>${esc(lesson.mentalText)}</p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>2. Input and output</h2>
+        <p>Know what goes in and what comes out.</p>
+      </div>
+      <div class="body two">
+        <div class="mini"><h3>Input</h3><p>${esc(lesson.input)}</p></div>
+        <div class="mini"><h3>Output</h3><p>${esc(lesson.output)}</p></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>3. How it works</h2>
+        <p>Follow each step and the rule that helps keep the result correct.</p>
+      </div>
+      <div class="body two">
+        <div>
+          ${listToHTML(lesson.steps)}
+          <div class="takeaway" style="margin-top:14px"><strong>Key rule:</strong> ${esc(lesson.invariant)}</div>
+        </div>
+        <pre class="pseudo">${esc(lesson.pseudo)}</pre>
+      </div>
+      <div class="table-wrap" style="margin:0 15px 15px">
+        <table>
+          <thead><tr><th>Step</th><th>What happens</th><th>Why it matters</th></tr></thead>
+          <tbody>${lesson.trace.map((row) => `<tr>${row.map((cell) => `<td>${esc(cell)}</td>`).join('')}</tr>`).join('')}</tbody>
+        </table>
+      </div>
+    </section>
+
+    ${demoArea}
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>4. Cost and stability</h2>
+        <p>These are general descriptions, not universal performance promises. Test on your own data.</p>
+      </div>
+      <div class="body">
+        <div class="tiles">
+          ${lesson.complexity.map((item, i) => `
+            <div class="tile">
+              <span>${['Time', 'Space', 'Interpretation'][i]}</span>
+              <strong>${esc(item.split(' ').slice(0, 2).join(' '))}</strong>
+              <small>${esc(item)}</small>
+            </div>`).join('')}
+        </div>
+        <div class="two" style="margin-top:10px">
+          <div class="mini"><h3>Strengths</h3><p>${esc(lesson.strength)}</p></div>
+          <div class="mini"><h3>Limits</h3><p>${esc(lesson.limits)}</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>5. Code and usage</h2>
+        <p>Reference code is for learning. The interactive lab may use a simplified JavaScript implementation.</p>
+      </div>
+      <div class="code-head">
+        <div>
+          <span class="tag">${codeIsExecutable ? 'Python example' : 'Concept outline, not executable'}</span>
+          <span class="tag">Editable</span>
+        </div>
+        <div class="header-actions" style="margin:0">
+          <button class="btn" id="copyCode" type="button">Copy code</button>
+          <button class="btn" id="downloadCode" type="button">Download</button>
+        </div>
+      </div>
+      <textarea id="codeEditor" class="code-editor" spellcheck="false" aria-label="Editable Python code">${esc(code)}</textarea>
+      <div class="code-foot">
+        <span>${codeIsExecutable ? 'Reference example. The in-page lab runs its own teaching implementation.' : 'Lesson-specific outline, not executable Python.'}</span>
+        <span id="codeStatus">Local draft</span>
+      </div>
+      <div class="body">
+        <div class="mini"><h3>Where it is used</h3><p>${esc(lesson.uses)}</p></div>
+        <div class="notice" style="margin-top:10px"><strong>Common pitfall:</strong> ${esc(lesson.pitfall)}</div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>6. Choices and alternatives</h2>
+        <p>Choose based on the task, language, data and quality you need.</p>
+      </div>
+      <div class="body two">
+        <div class="mini"><h3>When this is useful</h3><p>${esc(lesson.strength)}</p></div>
+        <div class="mini"><h3>When another method may fit better</h3><p>${esc(lesson.limits)}</p></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>7. Check yourself</h2>
+        <p>Try answering before revealing the explanation.</p>
+      </div>
+      <div class="body">
+        <details class="practice">
+          <summary>${esc(lesson.question)}</summary>
+          <p>${esc(lesson.answer)}</p>
+        </details>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>8. References</h2>
+        <p>Read the sources for a deeper or more formal explanation.</p>
+      </div>
+      <div class="body">
+        ${references}
+        <p class="muted" style="font-size:10px;margin-top:12px">This lab is for learning. For production work, use maintained libraries and test them on representative data.</p>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <span>aznur / nlp &amp; ir lab · local learning</span>
+      <span>Lesson ${index + 1} of ${LESSONS.length} · Next: ${esc(next.title)}</span>
+      <button class="btn" id="nextLesson" type="button">Next →</button>
+    </footer>`;
+
+  $('#bookmarkBtn').onclick = () => {
+    state.bookmarks.has(id) ? state.bookmarks.delete(id) : state.bookmarks.add(id);
+    save();
+    renderLesson(id);
+    toast(state.bookmarks.has(id) ? 'Bookmarked' : 'Bookmark removed');
+  };
+  $('#completeBtn').onclick = () => {
+    state.completed.has(id) ? state.completed.delete(id) : state.completed.add(id);
+    save();
+    renderTree();
+    renderLesson(id);
+    toast(state.completed.has(id) ? 'Lesson completed' : 'Completion removed');
+  };
+  $('#nextLesson').onclick = () => openLesson(next.id);
+  $('#copyCode').onclick = async () => {
+    const value = $('#codeEditor').value;
+    try {
+      await navigator.clipboard.writeText(value);
+      toast('Code copied');
+    } catch {
+      const textarea = $('#codeEditor');
+      textarea.select();
+      document.execCommand('copy');
+      toast('Code copied');
+    }
+  };
+  $('#downloadCode').onclick = () => {
+    const record = codeRecord(lesson);
+    downloadText(`${id}.${record ? 'py' : 'txt'}`, $('#codeEditor').value, record ? 'text/x-python' : 'text/plain');
+  };
+  $('#codeEditor').addEventListener('input', () => {
+    state.drafts[id] = $('#codeEditor').value;
+    save();
+    $('#codeStatus').textContent = 'Draft saved locally';
+  });
+
+  if (hasDemo) {
+    $('#runLab').onclick = () => runLab(lesson);
+    $('#resetSample').onclick = () => {
+      $('#labInput').value = lesson.sample || '';
+      $('#labEncoded').textContent = 'Run the lab to see output.';
+      $('#labDecoded').textContent = 'Step notes appear here.';
+    };
+    runLab(lesson, true);
+  }
+
+  renderTree();
+  save();
+  if (location.hash !== `#${id}`) history.replaceState(null, '', `#${id}`);
 }
 
 function renderHome(){
  state.page='home';
- $('#mainView').innerHTML=`<div class="home-hero"><div class="eyebrow">AZ · NLP AND IR TOOLBOOK</div><h1>Understand NLP and information retrieval from tokenization to retrieval-augmented generation.</h1><p>A single-file course covering text preparation, tokenization algorithms, language models, classification and labeling, topics and key phrases, parsing, search indexes, semantic retrieval, reranking and question answering, and modern RAG. Every lesson has a plain explanation and most have a runnable lab.</p><div class="header-actions" style="margin:0"><button class="btn primary" id="startFirst">Start at the beginning</button><button class="btn" id="resumeLesson">Continue lesson</button></div></div>
+ $('#mainView').innerHTML=`<div class="home-hero"><div class="eyebrow">AZNUR · NLP / IR TOOLBOOK</div><h1>Learn text processing, search and RAG one idea at a time.</h1><p>This course moves from text preparation and tokenization to language models, classification, parsing, search ranking, semantic retrieval, reranking, question answering and RAG. Start with the plain-language explanation, then explore the full notes, pseudocode, examples and references. The interactive labs are small teaching models, not production-grade NLP systems.</p><div class="header-actions" style="margin:0"><button class="btn primary" id="startFirst">Start at the beginning</button><button class="btn" id="resumeLesson">Continue lesson</button></div></div>
 <div class="stats"><div class="stat"><strong>${CHAPTERS.length}</strong><span>chapters</span></div><div class="stat"><strong>${LESSONS.length}</strong><span>lessons</span></div><div class="stat"><strong>${LESSONS.filter(l=>l.demo&&l.demo!=='none').length}</strong><span>runnable labs</span></div><div class="stat"><strong>1</strong><span>standalone HTML file</span></div></div>
 <section class="panel"><div class="panel-head"><h2>Honest scope</h2><p>One app covers the whole curriculum. Production NLP/IR systems are a separate engineering project.</p></div><div class="body two"><div class="mini"><h3>What runs here</h3><p>Sentence splitting and tokenization, simplified Porter stemming, BPE training and merging, WordPiece greedy tokenization, bigram language models with Laplace smoothing and perplexity, co-occurrence word embeddings, Naive Bayes text classification, HMM Viterbi decoding, TF-IDF weighting, TextRank keyword extraction, LDA collapsed Gibbs sampling, CYK constituency parsing, inverted index and Boolean retrieval, BM25 ranking, random-projection dense retrieval, cross-encoder reranking surrogate, extractive QA span scoring, fixed and recursive chunking, RAG retrieval with citations, and retrieval evaluation (precision, recall, MRR, NDCG).</p></div><div class="mini"><h3>What does not run here</h3><p>Production tokenizers (HuggingFace, SentencePiece), large pretrained language models, trained word2vec/GloVe/fastText, trained CRFs, dependency and constituency parsers with neural models, learning-to-rank (LambdaMART), cross-encoders, dense encoders (DPR, E5), ANN indexes (FAISS, HNSW), and full RAG systems with LLMs. For real work use spaCy, Hugging Face Transformers, sentence-transformers, rank_bm25, scikit-learn, Gensim, Lucene, Elasticsearch, FAISS, or another vetted library.</p></div></div></section>
 <div class="panel"><div class="panel-head"><h2>Course map</h2><p>Pick a chapter. The path runs from text preparation to retrieval-augmented generation.</p></div><div class="body"><div class="chapter-cards">${CHAPTERS.map((c,i)=>`<button class="chapter-card" data-chapter="${c.id}"><span class="num">CHAPTER ${String(i+1).padStart(2,'0')} · ${c.ids.length} LESSONS</span><strong>${esc(c.title.replace(/^\d+(\.\d+)?\s*/,''))}</strong><p>${esc(c.desc)}</p></button>`).join('')}</div></div></div>
-<footer class="footer"><span>Az NLP &amp; Information Retrieval Lab</span><span>Single file · no external runtime dependencies</span></footer>`;
+<footer class="footer"><span>aznur / nlp &amp; ir lab</span><span>Single file · local teaching demos · no model downloads</span></footer>`;
  $('#startFirst').onclick=()=>openLesson('text-prep');
  $('#resumeLesson').onclick=()=>openLesson(state.current&&byId[state.current]?state.current:'text-prep');
  $('#mainView').querySelectorAll('[data-chapter]').forEach(b=>b.onclick=()=>{const c=CHAPTERS.find(x=>x.id===b.dataset.chapter);if(c)openLesson(c.ids[0])});
@@ -2263,7 +2845,7 @@ function renderHome(){
 
 function renderProgressPage(){
  state.page='progress';
- $('#mainView').innerHTML=`<div class="breadcrumb">NLP &amp; IR Lab / Bookmarks & progress</div><header class="header"><div class="eyebrow">LOCAL ONLY</div><h1>Bookmarks and progress</h1><p>Your progress stays in this browser. Export the JSON to move it or keep a backup.</p></header>
+ $('#mainView').innerHTML=`<div class="breadcrumb">aznur / nlp &amp; ir lab / Bookmarks &amp; progress</div><header class="header"><div class="eyebrow">LOCAL ONLY</div><h1>Bookmarks and progress</h1><p>Your progress stays in this browser. Export the JSON to move it or keep a backup.</p></header>
 <section class="panel"><div class="panel-head"><h2>Completed lessons</h2></div><div class="body">${state.completed.size?`<div class="references">${[...state.completed].map(id=>`<a href="#${id}" data-open="${id}">${esc(byId[id].title)}</a>`).join('')}</div>`:'<p class="muted">No lessons marked complete yet.</p>'}</div></section>
 <section class="panel"><div class="panel-head"><h2>Bookmarks</h2></div><div class="body">${state.bookmarks.size?`<div class="references">${[...state.bookmarks].map(id=>`<a href="#${id}" data-open="${id}">${esc(byId[id].title)}</a>`).join('')}</div>`:'<p class="muted">No bookmarks yet.</p>'}</div></section>
 <section class="panel"><div class="panel-head"><h2>Progress data</h2></div><div class="body"><div class="header-actions" style="margin:0"><button class="btn primary" id="exportProgress">Export progress JSON</button><button class="btn" id="clearProgress">Clear completion marks</button></div><p class="muted" style="font-size:12.5px;margin-top:14px">Import accepts only known lesson IDs and a supported schema version.</p></div></section>`;
@@ -2320,6 +2902,10 @@ function init(){
  applyTheme();
  CHAPTERS.forEach(c=>{const op=document.createElement('option');op.value=c.id;op.textContent=c.title;$('#chapterFilter').append(op)});
  bindGlobal();
+ const themePreference = matchMedia('(prefers-color-scheme: light)');
+ if (themePreference.addEventListener) {
+  themePreference.addEventListener('change', () => { if (state.theme === 'system') applyTheme(); });
+ }
  renderTree();
  const hash=location.hash.replace(/^#/,'');
  if(hash&&byId[hash])renderLesson(hash);
